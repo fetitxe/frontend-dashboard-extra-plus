@@ -50,6 +50,141 @@ if( !function_exists('fed_form_intl_tel') ){
 	}
 }
 
+if( !function_exists('fed_form_geopos') ){
+	/**
+	 * Form Geolocation with Google Maps v3.
+	 *
+	 * @param  array $options  Options.
+	 *
+	 * @return string
+	 */
+	function fed_form_geopos($options){
+		$id          = ( isset( $options['id_name'] ) && '' != $options['id_name'] ) ? 'id="' . esc_attr( $options['id_name'] ) . '"' : null;
+		$name        = fed_get_data('input_meta', $options);
+		$value       = fed_get_data('user_value', $options);
+		$class       = 'form-control locationFloat '.fed_get_data('class_name', $options);
+		$placeholder = ( isset($options['placeholder']) && '' != $options['placeholder'] )? 'placeholder="' . esc_attr($options['placeholder']) . '"' : null;
+		$required    = ( 'true' == fed_get_data('is_required', $options) )? 'required="required"' : null;
+		$readonly    = ( true === fed_get_data( 'readonly', $options ) )? 'readonly=readonly' : null;
+		$disabled    = ( true === fed_get_data( 'disabled', $options ) )? 'disabled=disabled' : null;
+		$extended    = isset($options['extended']) && !empty($options['extended'])? unserialize($options['extended']) : array();
+		$extra       = isset($options['extra']) ? $options['extra'] : null;
+
+		$latitude = '';
+		$longitude = '';
+		if( '' != $value){
+			$coords = explode(',', $value);
+			$latitude = $coords[0];
+			$longitude = $coords[1];
+		}
+
+		$help = ( isset($extended['show_tooltip_help']) && fed_is_true_false($extended['show_tooltip_help']) )? fed_show_help_message(array(
+			'title' 	=> fed_get_data('label_name', $options),
+			'content' 	=> $extended['tooltip_help_text'],
+		)) : '';
+
+		$hidden = sprintf(
+			"<input type='hidden' name='%s' value='%s' class='%s' %s %s %s %s aria-label='Geolocation' />",
+			$name,
+			$value,
+			$class,
+			$disabled,
+			$extra,
+			$readonly,
+			$required
+		);
+
+		return '<div class="geopos" '.$id.' data-key="'.$name.'" data-locate="'.$extended['geolocation'].'">
+			'.$hidden.'
+			<div class="input-group">
+				<span class="input-group-addon"><span class="visible-xs-inline-block">'.__('Lat.:', 'frontend-dashboard-extra-plus').'</span><span class="hidden-xs">'.__('Latitude:', 'frontend-dashboard-extra-plus').'</span></span>
+				<input type="text" class="form-control latitude"  value="'.$latitude.'" aria-label="Latitude" readonly="readonly" '.$placeholder.'>
+				<span class="input-group-addon"><span class="visible-xs-inline-block">'.__('Long.:', 'frontend-dashboard-extra-plus').'</span><span class="hidden-xs">'.__('Longitude:', 'frontend-dashboard-extra-plus').'</span></span>
+				<input type="text" class="form-control longitude" value="'.$longitude.'" aria-label="Longitude" readonly="readonly" '.$placeholder.'>
+				<span class="input-group-btn">
+					<button class="btn btn-default setLocation" type="button" data-toggle="modal" data-target=".modal-'.$name.'">'.__('Set Location', 'frontend-dashboard-extra-plus').'</button>
+				</span>
+			</div>'.$help.'
+			<div class="modal fade modal-'.$name.'" tabindex="-1" role="dialog" aria-labelledby="label-'.$name.'">
+				<div class="modal-dialog modal-lg" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+							<h4 class="modal-title">'.__('Select a location', 'frontend-dashboard-extra-plus').'</h4>
+						</div>
+						<div class="modal-body map"></div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-danger resetLocation">'.__('Clear', 'frontend-dashboard-extra-plus').'</button>
+							<button type="button" class="btn btn-success" data-dismiss="modal">'.__('Ok', 'frontend-dashboard-extra-plus').'</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>';
+	}
+}
+
+if( !function_exists('fed_form_country') ){
+	/**
+	 * Country Selector.
+	 *
+	 * @param  array $options  Options.
+	 *
+	 * @return string
+	 */
+	function fed_form_country($options){
+		$attrs = array(
+			'input_meta' 			=> $options['input_meta'],
+			'user_value' 			=> $options['user_value'],
+			'class_name' 			=> $options['class_name'],
+			'is_required' 			=> $options['is_required'],
+			'id_name' 				=> $options['id_name'],
+			'disabled' 				=> isset($options['disabled'])? $options['disabled'] : '',
+			'extra' 				=> isset($options['extra'])? $options['extra'] : '',
+		);
+
+		$extended = isset($options['extended'])? ( is_string($options['extended'])? unserialize($options['extended']) : $options['extended'] ) : array();
+
+		if( isset($extended['multiple']) && 'Enable' == $extended['multiple'] ){
+			$attrs['extra'] = $attrs['extra'] . ' multiple=multiple ';
+			$attrs['input_meta'] = $attrs['input_meta'] . '[]';
+			$attrs['class_name'] = $attrs['class_name'] . ' country-multiple ';
+		}else{
+			$attrs['class_name'] = $attrs['class_name'] . ' country-selector ';
+		}
+
+		$countries = fed_country_iso_code();
+		if( isset($extended['exclude_countries']) && !empty($extended['exclude_countries']) ){
+			foreach( $extended['exclude_countries'] as $code ){
+				unset($countries[$code]);
+			}
+		}
+		if( isset($extended['only_countries']) && !empty($extended['only_countries']) ){
+			foreach( $countries as $code => $name ){
+				if( !in_array($code, $extended['only_countries']) ){
+					unset($countries[$code]);
+				}
+			}
+		}
+		if( isset($extended['initial_country']) && '' != $extended['initial_country'] ){
+			$temp = isset($countries[$extended['initial_country']])? $countries[$extended['initial_country']] : false ;
+			if($temp){
+				unset($countries[$extended['initial_country']]);
+				$countries = array_merge(array(
+					$extended['initial_country'] 	=> $temp
+				), $countries);
+			}
+		}
+
+		$attrs['input_value'] = array_merge( array(
+			'' 		=> __('Select...', 'frontend-dashboard-extra-plus')
+		), $countries);
+
+		return fed_form_select($attrs);
+	}
+}
+
+
 if( !function_exists('fed_country_iso_code') ){
 	/** National ISO code.
 	 *
