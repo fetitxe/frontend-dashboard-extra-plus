@@ -617,7 +617,7 @@ if( !class_exists('Fed_Extra_Plus_Menu')){
 				</div>
 				<div class="row">
 					<div class="col-md-12">
-						<button type="submit" class="btn btn-primary"><i class="fa fa-floppy-o"></i><?php esc_attr_e( 'Save', 'frontend-dashboard-extra-plus'); ?></button>
+						<button type="submit" class="btn btn-primary"><i class="fa fa-floppy-o"></i> <?php esc_attr_e('Save', 'frontend-dashboard-extra-plus'); ?></button>
 					</div>
 				</div>
 			</form><?php
@@ -646,7 +646,6 @@ if( !class_exists('Fed_Extra_Plus_Menu')){
 			}
 		}
 
-
 		/** Enqueue Scripts
 		 *
 		 */
@@ -662,7 +661,7 @@ if( !class_exists('Fed_Extra_Plus_Menu')){
 			wp_enqueue_script('fed-extra-plus-intlTelInput', plugins_url('assets/js/intlTelInput-jquery.min.js', FED_EXTRA_PLUS_PLUGIN), array('jquery'), FED_EXTRA_PLUS_PLUGIN_VERSION);
 			wp_enqueue_script('fed-extra-plus-jquery-ui-selectmenu', plugins_url('assets/js/jquery-ui.js', FED_EXTRA_PLUS_PLUGIN), array('jquery'), FED_EXTRA_PLUS_PLUGIN_VERSION);
 
-			wp_enqueue_script('fed-extra-plus-script', plugins_url('assets/js/script.js', FED_EXTRA_PLUS_PLUGIN), array('jquery', 'fed-extra-plus-jquery-ui-selectmenu', 'fed-extra-plus-intlTelInput', 'fed-extra-plus-gmaps'), FED_EXTRA_PLUS_PLUGIN_VERSION);
+			wp_enqueue_script('fed-extra-plus-script', plugins_url('assets/js/script.js', FED_EXTRA_PLUS_PLUGIN), array('jquery', 'fed-extra-plus-jquery-ui-selectmenu', 'fed-extra-plus-intlTelInput', 'fed-extra-plus-gmaps', 'fed_select2_script'), FED_EXTRA_PLUS_PLUGIN_VERSION);
 			wp_localize_script('fed-extra-plus-script', 'fedep', array( 
 				'utils' 	=> plugins_url('assets/js/utils.js', FED_EXTRA_PLUS_PLUGIN),
 				'error' 	=> array(

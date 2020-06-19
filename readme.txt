@@ -1,9 +1,9 @@
 ﻿=== Frontend Dashboard Extra Plus===
-Tags: dashboard, frontend dashboard extra plus, telephone, international telephone
+Tags: dashboard, frontend dashboard extra plus, telephone, international telephone, country, geolocation, gmaps
 Donate link: https://iwa-ait.org/
 Requires at least: 4.6
 Tested up to: 5.4
-Stable tag: 1.2
+Stable tag: 1.3
 License: GPL V3
 License URI: https://www.gnu.org/licenses/gpl-3.0.en.html
 
@@ -28,9 +28,11 @@ Frontend Dashboard Extra Plus WordPress plugin is a supportive plugin for Fronte
 4. Do save.
 
 == Changelog ==
+= v1.3 [8-Jun-2020] =
+* Bug fix
 
 = v1.2 [5-Jun-2020] =
-* Geolocation Added
+* Country Added
 
 = v1.1 [4-Jun-2020] =
 * Geolocation Added
@@ -40,5 +42,5 @@ Frontend Dashboard Extra Plus WordPress plugin is a supportive plugin for Fronte
 
 == Upgrade Notice ==
 
-= v1.2 [5-Jun-2020] =
-* Geolocation Added
+= v1.3 [8-Jun-2020] =
+* Bug fix

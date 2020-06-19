@@ -32,28 +32,28 @@ jQuery(document).ready(function($){
 			return li.append(wrapper).appendTo(ul);
 		},
 		
-		_drawButton: function() {
+		_drawButton: function(){
 			var icon,
 				that = this,
 				item = this._parseOption(
-					this.element.find( "option:selected" ),
-					this.element[ 0 ].selectedIndex
+					this.element.find("option:selected"),
+					this.element[0].selectedIndex
 				);
 
 			// Associate existing label with the new button
-			this.labels = this.element.labels().attr( "for", this.ids.button );
-			this._on( this.labels, {
-				click: function( event ) {
+			this.labels = this.element.labels().attr("for", this.ids.button);
+			this._on(this.labels, {
+				click: function(event){
 					this.button.focus();
 					event.preventDefault();
 				}
-			} );
+			});
 
 			// Hide original select element
 			this.element.hide();
 
 			// Create button
-			this.button = $( "<span>", {
+			this.button = $("<span>", {
 				'class': 'countrySelector',
 				tabindex: this.options.disabled ? -1 : 0,
 				id: this.ids.button,
@@ -62,28 +62,25 @@ jQuery(document).ready(function($){
 				"aria-autocomplete": "list",
 				"aria-owns": this.ids.menu,
 				"aria-haspopup": "true",
-				title: this.element.attr( "title" )
-			} )
-				.insertAfter( this.element );
+				title: this.element.attr("title")
+			}).insertAfter(this.element);
 
-			this._addClass( this.button, "ui-selectmenu-button ui-selectmenu-button-closed",
-				"ui-button ui-widget" );
+			this._addClass(this.button, "ui-selectmenu-button ui-selectmenu-button-closed", "ui-button ui-widget");
 
-			icon = $( "<span>" ).appendTo( this.button );
-			this._addClass( icon, "ui-selectmenu-icon", "ui-icon " + this.options.icons.button );
-			this.buttonItem = this._renderButtonItem( item )
-				.appendTo( this.button );
+			icon = $("<span>" ).appendTo(this.button);
+			this._addClass(icon, "ui-selectmenu-icon", "ui-icon " + this.options.icons.button);
+			this.buttonItem = this._renderButtonItem(item).appendTo(this.button);
 
-			if ( this.options.width !== false ) {
+			if( this.options.width !== false ){
 				this._resizeButton();
 			}
 
-			this._on( this.button, this._buttonEvents );
-			this.button.one( "focusin", function() {
+			this._on(this.button, this._buttonEvents);
+			this.button.one("focusin", function(){
 
 				// Delay rendering the menu items until the button receives focus.
 				// The menu may have already been rendered via a programmatic open.
-				if ( !that._rendered ) {
+				if( !that._rendered ){
 					that._refreshMenu();
 				}
 			} );

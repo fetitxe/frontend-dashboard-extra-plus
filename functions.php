@@ -134,11 +134,11 @@ if( !function_exists('fed_form_country') ){
 	 */
 	function fed_form_country($options){
 		$attrs = array(
-			'input_meta' 			=> $options['input_meta'],
-			'user_value' 			=> $options['user_value'],
-			'class_name' 			=> $options['class_name'],
-			'is_required' 			=> $options['is_required'],
-			'id_name' 				=> $options['id_name'],
+			'input_meta' 			=> isset($options['input_meta'])? $options['input_meta'] : fed_get_random_string(5),
+			'user_value' 			=> isset($options['user_value'])? $options['user_value'] : '',
+			'class_name' 			=> isset($options['class_name'])? $options['class_name'] : '',
+			'is_required' 			=> isset($options['is_required'])? $options['is_required'] : '',
+			'id_name' 				=> isset($options['id_name'])? $options['id_name'] : '',
 			'disabled' 				=> isset($options['disabled'])? $options['disabled'] : '',
 			'extra' 				=> isset($options['extra'])? $options['extra'] : '',
 		);
