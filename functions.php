@@ -439,4 +439,133 @@ if( !function_exists('fed_country_iso_code') ){
 	}
 }
 
+if( !function_exists('fed_form_file_advanced') ){
+	/* Draw file upload.
+	 *
+	 * @param  array $options  Options.
+	 *
+	 * @return string
+	 */
+	function fed_form_file_advanced($options){
+		$extended = isset($options['extended'])? unserialize($options['extended']) : array();
+		$all_mime = array_values(wp_get_mime_types());
+		$allow_mime = ( isset($extended['allowed_files']) && !empty($extended['allowed_files']) )? $extended['allowed_files'] : $all_mime;
+		$forbiden_mime = ( isset($extended['forbidden_files']) && !empty($extended['forbidden_files']) )? $extended['forbidden_files'] : array();
+		$multiple = ( isset($extended['multiple_files']) && 'true' == $extended['multiple_files'] )? true : false;
+		$label = isset($options['label_name'])? $options['label_name'] : __('Feature');
+		$meta = $options['input_meta'].($multiple? '[]' : '');
+		$icon = isset($extended['main_icon'])? $extended['main_icon'] : 'fas fa-upload';
+
+		$items = array();
+		$user_value = fed_get_data('user_value', $options);
+		if( !empty($user_value) ){
+			$user_value = $multiple? unserialize($user_value) : $user_value;
+			if( !is_array($user_value) ){
+				$user_value = array($user_value);
+			}
+			foreach( $user_value as $value ){
+				if( '' !== $value){
+					$value = (int) $value;
+					$items[] = array(
+						'id' 	=> $value,
+						'img'	=> fed_extra_plus_get_image_by_type($value, array(
+							'width' 		=> $multiple? 112 : 250,
+							'height' 		=> $multiple? 112 : 250,
+							'cut' 			=> true
+						)),
+					);
+				}
+			}
+		}
+		if( empty($user_value) || $multiple ){
+			$items[] = array(
+				'id' 	=> '',
+				'img'	=> '<span class="fed_extra_plus_upload_icon '.$icon .' fa-3x"></span>',
+			);
+		}
+
+		$all_mime = array_values(array_intersect(array_diff($all_mime, $forbiden_mime), $allow_mime));
+		$input = '<div class="fed_extra_plus_upload_wrapper text-center" data-multiple="'.$multiple.'" data-meta="'.$meta.'" data-icon="'.$icon.'" data-label="'.$label.'" data-button="'.__('Select').'" data-url="'.admin_url('admin-ajax.php').'" data-nonce="'.wp_create_nonce('fed_nonce').'" data-allow="'.implode(',', $all_mime).'">';
+		foreach( $items as $attach ){
+			$input .= fed_extra_plus_attached_item($meta, $attach);
+		}
+		$input .= '</div>';
+		return $input;
+	}
+}
+
+if( !function_exists('fed_extra_plus_attached_item') ){
+	/** Generate de input w/ values
+	 *
+	 * @param $id  Attachment id
+	 *
+	 * @return string
+	 */
+	function fed_extra_plus_attached_item($meta, $item = array() ){
+		$value = ( isset($item['id']) && '' !== $item['id'] )? (int) $item['id'] : '';
+		$empty = ( !isset($item['id']) || ( isset($item['id']) && '' === $item['id'] ) )? 'empty' : '';
+		$img   = ( isset($item['img']) && '' !== $item['img'] )? $item['img'] : '';
+		return '<div class="thumbnail '.$empty.'">
+			<button type="button" class="close fed_extra_plus_remove_image" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			<div class="fed_extra_plus_upload_container">
+				<div class="fed_extra_plus_upload_image_container">'.$img.'</div>
+				<input type="hidden" name="'.$meta.'" class="fed_extra_plus_upload_input" value="'.$value.'" />
+			</div>
+		</div>';
+	}
+}
+
+if( !function_exists('fed_extra_plus_get_image_by_type') ){
+	/** Return the attached image for use
+	 *
+	 * @param $id  Attachment id
+	 *
+	 * @return string
+	 */
+	function fed_extra_plus_get_image_by_type($id, $crop = array()){
+		$opts = array(
+			'width' 	=> ( isset($crop['width']) && '' !== $crop['width'] )? (int) $crop['width'] : 250,
+			'height' 	=> ( isset($crop['height']) && '' !== $crop['height'] )? (int) $crop['height'] : 250,
+			'cut' 		=> ( isset($crop['cut']) && is_bool($crop['cut']) )? $crop['cut'] : false,
+		);
+		$mime_type = get_post_mime_type($id);
+		$default = fed_image_mime_types();
+		if( false !== strpos($mime_type, 'image') ){
+			return wp_get_attachment_image($id, array($opts['width'], $opts['height'], $opts['cut']));
+		}
+		$file_name = '<span class="file_name">'.basename(get_attached_file($id)).'</span>';
+		if( isset($default[$mime_type]) ){
+			return '<img class="img-responsive center-block" src="'.$default[$mime_type].'" />'.$file_name;
+		}
+		return '<img class="img-responsive center-block" src="'.site_url().'/wp-includes/images/media/default.png" />'.$file_name;
+	}
+}
+
+if( !function_exists('fed_extra_plus_ajax_get_attachment_avanced_file') ){
+	/** Return the attached image on ajax request
+	 *
+	 * @param $id  Attachment id
+	 *
+	 * @return string
+	 */
+	function fed_extra_plus_ajax_get_attachment_avanced_file(){
+		$request = fed_sanitize_text_field($_REQUEST);
+		fed_verify_nonce($request);
+
+		$icon = '<span class="fed_extra_plus_upload_icon '.$request['icon'].' fa-3x"></span>';
+		$multiple = ( isset($request['multiple']) && '1' === $request['multiple'] )? true : false;
+
+		wp_send_json_success(array(
+			'data' => array(
+				'img' 		=> fed_extra_plus_get_image_by_type($request['attached'], array(
+					'width' 	=> $multiple? 112 : 250,
+					'height' 	=> $multiple? 112 : 250,
+					'cut' 		=> true
+				)),
+				'append' 	=> $multiple? fed_extra_plus_attached_item($request['meta'], array('img' => $icon)) : false,
+			),
+		));
+	}
+	add_action('wp_ajax_fed_extra_plus_ajax_get_attachment_avanced_file', 'fed_extra_plus_ajax_get_attachment_avanced_file');
+}
 ?>

@@ -11,9 +11,11 @@ if( !class_exists('Fed_Extra_Plus_Menu')){
 		public function __construct(){
 			add_filter('fed_custom_input_fields', array($this, 'fed_extra_plus_custom_input_fields'), 10, 2);
 			add_action('fed_admin_input_item_options', array($this, 'fed_extra_plus_admin_input_item_options'), 10, 1);
+
 			add_action('fed_admin_input_fields_container_extra', array($this, 'fed_extra_plus_admin_input_fields_container_extra_phone'), 10, 3);
 			add_action('fed_admin_input_fields_container_extra', array($this, 'fed_extra_plus_admin_input_fields_container_extra_geopos'), 10, 3);
 			add_action('fed_admin_input_fields_container_extra', array($this, 'fed_extra_plus_admin_input_fields_container_extra_country'), 10, 3);
+			add_action('fed_admin_input_fields_container_extra', array($this, 'fed_extra_plus_admin_input_fields_container_extra_file_advanced'), 10, 3);
 
 			add_filter('fed_default_extended_fields', array($this, 'fed_extra_plus_default_extended_fields'), 10, 1);
 			add_filter('fed_process_form_fields', array($this, 'fed_extra_plus_process_form_fields'), 10, 4);
@@ -24,7 +26,7 @@ if( !class_exists('Fed_Extra_Plus_Menu')){
 			add_action('fed_enqueue_script_style_frontend', array($this, 'fed_extra_plus_enqueue_script_style'));
 		}
 
-		/** Draw Telephone field
+		/** Extra Plus fields
 		 *
 		 * @param $input
 		 * @param $attr
@@ -57,6 +59,9 @@ if( !class_exists('Fed_Extra_Plus_Menu')){
 				case 'country':
 					$input .= fed_form_country($attr);
 					break;
+				case 'file_advanced':
+					$input .= fed_form_file_advanced($attr);
+					break;
 			}
 			return $input;
 		}
@@ -80,6 +85,10 @@ if( !class_exists('Fed_Extra_Plus_Menu')){
 				'geopos' => array(
 					'name'  => __('Geolocation', 'frontend-dashboard-extra-plus'),
 					'image' => plugins_url('assets/img/inputs/geo.png', FED_EXTRA_PLUS_PLUGIN),
+				),
+				'file_advanced' => array(
+					'name'  => __('Advanced File', 'frontend-dashboard-extra-plus'),
+					'image' => plugins_url('assets/img/inputs/avanced.png', FED_EXTRA_PLUS_PLUGIN),
 				),
 			));
 		}
@@ -227,7 +236,7 @@ if( !class_exists('Fed_Extra_Plus_Menu')){
 												'class' 	=> 'country-multiple',
 												'value' 	=> isset($row['extended']['preferred_countries'])? $row['extended']['preferred_countries'] : array(),
 												'options' 	=> fed_country_iso_code(),
-												'extra' 		=> ' multiple=multiple ',
+												'extra' 	=> ' multiple=multiple ',
 											), 'select');
 										?></div>
 										<div class="form-group col-md-3 ui-front">
@@ -242,7 +251,7 @@ if( !class_exists('Fed_Extra_Plus_Menu')){
 												'class' 	=> 'country-multiple',
 												'value' 	=> isset($row['extended']['exclude_countries'])? $row['extended']['exclude_countries'] : array(),
 												'options' 	=> fed_country_iso_code(),
-												'extra' 		=> ' multiple=multiple ',
+												'extra' 	=> ' multiple=multiple ',
 											), 'select');
 										?></div>
 										<div class="form-group col-md-3 ui-front">
@@ -257,7 +266,7 @@ if( !class_exists('Fed_Extra_Plus_Menu')){
 												'class' 	=> 'country-multiple',
 												'value' 	=> isset($row['extended']['only_countries'])? $row['extended']['only_countries'] : array(),
 												'options' 	=> fed_country_iso_code(),
-												'extra' 		=> ' multiple=multiple ',
+												'extra' 	=> ' multiple=multiple ',
 											), 'select');
 										?></div>
 									</div><?php
@@ -350,9 +359,9 @@ if( !class_exists('Fed_Extra_Plus_Menu')){
 									<div class="row">
 										<div class="form-group col-md-3">
 											<label for="id_name"><?php _e('Show help in a tooltip', 'frontend-dashboard-user-taxo');?></label><?php echo fed_input_box('show_tooltip_help', array(
-												'name'    => 'extended[show_tooltip_help]',
-												'value'   => isset($row['extended']['show_tooltip_help']) ? $row['extended']['show_tooltip_help'] : 'false',
-												'options' => array(
+												'name' 		=> 'extended[show_tooltip_help]',
+												'value' 	=> isset($row['extended']['show_tooltip_help']) ? $row['extended']['show_tooltip_help'] : 'false',
+												'options' 	=> array(
 													'true' 		=> __('Yes'),
 													'false' 	=> __('No'),
 												),
@@ -403,13 +412,13 @@ if( !class_exists('Fed_Extra_Plus_Menu')){
 										<div class="form-group col-md-3">
 											<label for="class_name"><?php _e('Class Name'); ?></label><?php 
 											echo fed_input_box('class_name', array(
-												'value' => $row['class_name']
+												'value' 	=> $row['class_name']
 											),'single_line');
 										?></div>
 										<div class="form-group col-md-3">
 											<label for="id_name"><?php _e('ID Name'); ?></label><?php 
 											echo fed_input_box('id_name', array(
-												'value' => $row['id_name']
+												'value' 	=> $row['id_name']
 											), 'single_line'); 
 										?></div>
 									</div>
@@ -426,7 +435,7 @@ if( !class_exists('Fed_Extra_Plus_Menu')){
 												'class' 	=> 'country-selector',
 												'value' 	=> isset($row['extended']['initial_country'])? $row['extended']['initial_country'] : 'none',
 												'options' 	=> array_merge( array(
-													''		=> __('None', 'frontend-dashboard-extra-plus'),
+													'none'	=> __('None', 'frontend-dashboard-extra-plus'),
 												), fed_country_iso_code()),
 											), 'select');
 										?></div>
@@ -479,6 +488,152 @@ if( !class_exists('Fed_Extra_Plus_Menu')){
 			</div><?php
 		}
 
+		/**
+		 * Advanced File Field
+		 *
+		 * @param  array  $row
+		 * @param  string  $action
+		 */
+		public function fed_extra_plus_admin_input_fields_container_extra_file_advanced($row, $action, $menu_options){
+			?><div class="row fed_input_type_container fed_input_file_advanced_container hide">
+				<form method="post" class="fed_admin_menu fed_ajax" action="<?php echo admin_url('admin-ajax.php?action=fed_admin_setting_up_form'); ?>"><?php 
+					wp_nonce_field('fed_nonce', 'fed_nonce');
+					echo fed_loader();
+					?><div class="col-md-12">
+						<div class="panel panel-primary">
+							<div class="panel-heading">
+								<h3 class="panel-title">
+									<b><?php _e('Advanced File Field', 'frontend-dashboard-extra-plus'); ?></b>
+								</h3>
+							</div>
+							<div class="panel-body">
+								<div class="fed_input_text"><?php
+									fed_get_admin_up_label_input_order($row);
+									?><div class="row">
+										<?php fed_get_admin_up_input_meta($row); ?>
+										<div class="form-group col-md-3">
+											<label for="class_name">Class Name</label><?php
+											echo fed_input_box('class_name', array(
+												'value' => $row['class_name']
+											), 'single_line');
+										?></div>
+
+										<div class="form-group col-md-3">
+											<label for="id_name">ID Name</label><?php
+											echo fed_input_box('id_name', array(
+												'value' => $row['id_name']
+											), 'single_line');
+										?></div>
+									</div>
+									<div class="row">
+										<div class="form-group col-md-6">
+											<label for="main_icon"><?php _e('Main icon', 'frontend-dashboard-extra-plus');
+												echo ' '.fed_show_help_message(array(
+													'title' 	=> __('Main icon', 'frontend-dashboard-extra-plus'),
+													'content' 	=> __('Showed icon as placeholder.','frontend-dashboard-extra-plus'),
+												));
+											?></label><?php
+											echo fed_input_box('main_icon', array(
+												'id' 			=> 'main_icon',
+												'name' 			=> 'extended[main_icon]',
+												'value' 		=> isset($row['extended']['main_icon'])? $row['extended']['main_icon'] : 'fas fa-upload',
+												'class_name' 	=> ' ',
+												'extra' 		=> 'data-toggle="modal" data-target="#icons_modal"',
+											), 'single_line');
+											$this->fed_extra_plus_icons_modal('#main_icon');
+										?></div>
+										<div class="form-group col-md-6">
+											<label for="multiple_files"><?php _e('Multiple files', 'frontend-dashboard-extra-plus');
+												echo ' '.fed_show_help_message(array(
+													'title' 	=> __('Multiple files', 'frontend-dashboard-extra-plus'),
+													'content' 	=> __('Select more than one file.','frontend-dashboard-extra-plus'),
+												));
+											?></label><?php 
+											echo fed_input_box('multiple_files', array(
+												'name' 		=> 'extended[multiple_files]',
+												'value' 	=> isset($row['extended']['multiple_files'])? $row['extended']['multiple_files'] : 'false',
+												'options' 	=> array(
+													'false' 	=> __('No'),
+													'true' 		=> __('Yes'),
+												),
+											), 'select');
+										?></div>
+										<div class="form-group col-md-6">
+											<label for="allowed_files"><?php _e('Allowed file types', 'frontend-dashboard-extra-plus');
+												echo ' '.fed_show_help_message(array(
+													'title' 	=> __('Allowed file types', 'frontend-dashboard-extra-plus'),
+													'content' 	=> __('Select all allowed file types. If empty all file types are allowed.','frontend-dashboard-extra-plus'),
+												));
+											?></label><?php
+											$ready_mime = array();
+											foreach( array_values(wp_get_mime_types()) as $key => $name){
+												$ready_mime[$name] = $name;
+											}
+											echo fed_input_box('allowed_files', array(
+												'name' 		=> 'extended[allowed_files]',
+												'value' 	=> isset($row['extended']['allowed_files'])? $row['extended']['allowed_files'] : array(),
+												'options' 	=> $ready_mime,
+												'extended' 	=> array(
+													'multiple' 	=> 'Enable',
+												)
+											), 'select');
+										?></div>
+										<div class="form-group col-md-6">
+											<label for="forbidden_files"><?php _e('Forbidden file types', 'frontend-dashboard-extra-plus');
+												echo ' '.fed_show_help_message(array(
+													'title' 	=> __('Forbidden file types', 'frontend-dashboard-extra-plus'),
+													'content' 	=> __('Select all forbidden file types. If empty no file types will be forbidden.','frontend-dashboard-extra-plus'),
+												));
+											?></label><?php
+											echo fed_input_box('forbidden_files', array(
+												'name' 		=> 'extended[forbidden_files]',
+												'value' 	=> isset($row['extended']['forbidden_files'])? $row['extended']['forbidden_files'] : array(),
+												'options' 	=> $ready_mime,
+												'extended' 	=> array(
+													'multiple' 	=> 'Enable',
+												)
+											), 'select');
+										?></div>
+									</div><?php
+									fed_get_admin_up_display_permission($row, $action, $type = 'file');
+									fed_get_admin_up_role_based($row, $action, $menu_options);
+									fed_get_input_type_and_submit_btn('file_advanced', $action);
+								?></div>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div><?php
+		}
+
+		/** Generate modal window for icon select.
+		 *
+		 */
+		public function fed_extra_plus_icons_modal($target = ''){
+			if( '' !== $target ){
+				?><div class="modal fade" id="icons_modal" tabindex="-1" role="dialog" aria-labelledby="main_icon" data-target="<?php echo $target; ?>">
+					<div class="container">
+						<div class="modal-dialog modal-lg" role="document">
+							<div class="modal-content">
+								<div class="modal-header">
+									<button type="button" class="close" data-dismiss="modal" aria-label="<?php _e('Close'); ?>"><span aria-hidden="true">&times;</span></button>
+									<h4 class="modal-title"><?php _e('Select an Icon', 'frontend-dashboard-extra-plus'); ?></h4>
+								</div>
+								<div class="modal-body">
+									<div class="row"><?php 
+										foreach( fed_font_awesome_list() as $key => $list ){
+											echo '<div class="col-xs-3 col-sm-2 col-md-1 fed_extra_plus_icon text-center" data-dismiss="modal" data-id="'.$key.'" title="'.esc_attr($key).'"><span class="'.esc_attr($key).' fa-2x" data-id="'.esc_attr($key).'" id="'.esc_attr($key).'"></span></div>';
+										}
+									?></div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<?php
+			}
+		}
+
 		/** Default extended Fields.
 		 *
 		 * @param $fields
@@ -498,6 +653,10 @@ if( !class_exists('Fed_Extra_Plus_Menu')){
 				'geolocation'			=> 'false',
 				'show_tooltip_help'		=> 'false',
 				'tooltip_help_text'		=> __('Help is needed', 'frontend-dashboard-extra-plus'),
+				'main_icon' 			=> 'fas fa-upload',
+				'multiple_files' 		=> 'false',
+				'allowed_files' 		=> array(),
+				'forbidden_files' 		=> array(),
 			));
 		}
 
@@ -539,7 +698,7 @@ if( !class_exists('Fed_Extra_Plus_Menu')){
 						'extended' => serialize(array(
 							'geolocation'		=> isset($row['extended']['geolocation'])? $row['extended']['geolocation'] : 'false',
 							'show_tooltip_help'	=> isset($row['extended']['show_tooltip_help']) ? $row['extended']['show_tooltip_help'] : 'false',
-							'tooltip_help_text'	=> isset($row['extended']['tooltip_help_text']) ? $row['extended']['tooltip_help_text'] : __('Help is needed', 'frontend-dashboard-user-taxo'),
+							'tooltip_help_text'	=> isset($row['extended']['tooltip_help_text']) ? $row['extended']['tooltip_help_text'] : __('Help is needed', 'frontend-dashboard-extra-plus'),
 						)),
 					);
 					return array_merge($default, $extended);
@@ -558,6 +717,24 @@ if( !class_exists('Fed_Extra_Plus_Menu')){
 							'exclude_countries' => isset($row['extended']['exclude_countries'])? $row['extended']['exclude_countries'] : array(),
 							'only_countries' 	=> isset($row['extended']['only_countries'])? $row['extended']['only_countries'] : array(),
 							'multiple' 			=> isset($row['extended']['multiple'])? $row['extended']['multiple'] : '',
+						)),
+					);
+					return array_merge($default, $extended);
+				}else{
+					$default['extended'] = $row['extended'];
+					if( is_string($row['extended']) ){
+						$default['extended'] = unserialize($row['extended']);
+					}
+				}
+			}
+			if( 'file_advanced' === $row['input_type'] ){
+				if( 'yes' === $update ){
+					$extended = array(
+						'extended' => serialize(array(
+							'main_icon' 		=> isset($row['extended']['main_icon'])? $row['extended']['main_icon'] : 'fas fa-upload',
+							'multiple_files' 	=> isset($row['extended']['multiple_files'])? $row['extended']['multiple_files'] : 'false',
+							'allowed_files' 	=> isset($row['extended']['allowed_files'])? $row['extended']['allowed_files'] : array(),
+							'forbidden_files' 	=> isset($row['extended']['forbidden_files'])? $row['extended']['forbidden_files'] : array(),
 						)),
 					);
 					return array_merge($default, $extended);
@@ -625,7 +802,7 @@ if( !class_exists('Fed_Extra_Plus_Menu')){
 
 		/** Save GMap API settings.
 		 *
-		 * @param  array  $$request
+		 * @param  array  $request
 		 *
 		 */
 		public function fed_extra_plus_admin_settings_login_action($request){
@@ -659,10 +836,10 @@ if( !class_exists('Fed_Extra_Plus_Menu')){
 
 			wp_enqueue_script('fed-extra-plus-gmaps', 'https://maps.googleapis.com/maps/api/js'.$key, array('jquery'), FED_EXTRA_PLUS_PLUGIN_VERSION);
 			wp_enqueue_script('fed-extra-plus-intlTelInput', plugins_url('assets/js/intlTelInput-jquery.min.js', FED_EXTRA_PLUS_PLUGIN), array('jquery'), FED_EXTRA_PLUS_PLUGIN_VERSION);
-			wp_enqueue_script('fed-extra-plus-jquery-ui-selectmenu', plugins_url('assets/js/jquery-ui.js', FED_EXTRA_PLUS_PLUGIN), array('jquery'), FED_EXTRA_PLUS_PLUGIN_VERSION);
+			wp_enqueue_script('fed-extra-plus-jquery-ui-selectmenu', plugins_url('assets/js/jquery-ui.min.js', FED_EXTRA_PLUS_PLUGIN), array('jquery'), FED_EXTRA_PLUS_PLUGIN_VERSION);
 
 			wp_enqueue_script('fed-extra-plus-script', plugins_url('assets/js/script.js', FED_EXTRA_PLUS_PLUGIN), array('jquery', 'fed-extra-plus-jquery-ui-selectmenu', 'fed-extra-plus-intlTelInput', 'fed-extra-plus-gmaps', 'fed_select2_script'), FED_EXTRA_PLUS_PLUGIN_VERSION);
-			wp_localize_script('fed-extra-plus-script', 'fedep', array( 
+			wp_localize_script('fed-extra-plus-script', 'fedep', array(
 				'utils' 	=> plugins_url('assets/js/utils.js', FED_EXTRA_PLUS_PLUGIN),
 				'error' 	=> array(
 					__('Invalid number','frontend-dashboard-extra-plus'),

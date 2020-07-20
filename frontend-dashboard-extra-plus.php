@@ -3,11 +3,11 @@
  * Plugin Name: Frontend Dashboard Extra Plus
  * Plugin URI: https://github.com/fetitxe/frontend-dashboard-extra-plus
  * Description: Frontend Dashboard Extra Plus WordPress plugin is a supportive plugin for Frontend Dashboard.
- * Version: 1.3.0
+ * Version: 1.4.0
  * Author: fetitxe
  * Author URI: https://github.com/fetitxe/frontend-dashboard-extra-plus
  * License: GPLv2
- * License URI: http://www.gnu.org/licenses/gpl-2.0.html 
+ * License URI: http://www.gnu.org/licenses/gpl-3.0.html 
  * Text Domain: fed
  *
  * @package frontend-dashboard-extra-plus
@@ -24,7 +24,7 @@ if( $fed_check && is_plugin_active('frontend-dashboard/frontend-dashboard.php') 
 	/**
 	 * Version Number
 	 */
-	define('FED_EXTRA_PLUS_PLUGIN_VERSION', '1.3.0');
+	define('FED_EXTRA_PLUS_PLUGIN_VERSION', '1.4.0');
 
 	/**
 	 * App Name

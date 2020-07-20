@@ -52,3 +52,40 @@
 .geopos .map{
 	min-height: 250px;
 }
+
+.fed_extra_plus_icon {
+	border: 1px solid #ccc;
+	padding-top: 15px;
+	padding-bottom: 15px;
+}
+
+.fed_extra_plus_upload_wrapper .thumbnail{
+	display: inline-block;
+	vertical-align: middle;
+	margin: .3rem;
+}
+
+.fed_extra_plus_upload_icon{
+	margin:3.5rem;
+}
+
+.fed_extra_plus_upload_container{
+	cursor:pointer;
+}
+
+.fed_extra_plus_upload_image_container .img-responsive{
+	margin: 2.4rem 3.5rem;
+}
+
+.fed_extra_plus_remove_image{
+	height:0;
+}
+
+.fed_extra_plus_upload_image_container span.file_name{
+	display: block;
+	height: 0;
+	position: relative;
+	top: -20px;
+	font-size: 10px;
+	color: #777;
+}

@@ -3,7 +3,7 @@ Tags: dashboard, frontend dashboard extra plus, telephone, international telepho
 Donate link: https://iwa-ait.org/
 Requires at least: 4.6
 Tested up to: 5.4
-Stable tag: 1.3
+Stable tag: 1.4
 License: GPL V3
 License URI: https://www.gnu.org/licenses/gpl-3.0.en.html
 
@@ -14,11 +14,12 @@ Frontend Dashboard Extra Plus WordPress plugin is a supportive plugin for Fronte
 > #### Notice
 > This is an Add-on plugin of [Frontend Dashboard] but not ( https://wordpress.org/plugins/frontend-dashboard/ ), So please install [Frontend Dashboard] from my  GitHub (https://github.com/fetitxe/frontend-dashboard) to use this plugin.
 
-Frontend Dashboard Extra Plus WordPress plugin is a supportive plugin for Frontend Dashboard with supportive additional features likes International Telephone,Country, Geolocation.
+Frontend Dashboard Extra Plus WordPress plugin is a supportive plugin for Frontend Dashboard with supportive additional features likes International Telephone, Country, Geolocation, Files.
 
 = International Telephone =
 = Country =
 = Geolocation =
+= Avanced File =
 
 
 == Installation ==
@@ -28,6 +29,9 @@ Frontend Dashboard Extra Plus WordPress plugin is a supportive plugin for Fronte
 4. Do save.
 
 == Changelog ==
+= v1.4 [17-Jul-2020] =
+* Added Avanced File Field
+
 = v1.3 [8-Jun-2020] =
 * Bug fix
 
@@ -42,5 +46,5 @@ Frontend Dashboard Extra Plus WordPress plugin is a supportive plugin for Fronte
 
 == Upgrade Notice ==
 
-= v1.3 [8-Jun-2020] =
-* Bug fix
+= v1.4 [17-Jul-2020] =
+* Added Avanced File Field
