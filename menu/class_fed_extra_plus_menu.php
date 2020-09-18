@@ -385,7 +385,6 @@ if( !class_exists('Fed_Extra_Plus_Menu')){
 			</div><?php
 		}
 
-
 		/** Country Selector Field
 		 *
 		 * @param  array  $row
@@ -469,7 +468,7 @@ if( !class_exists('Fed_Extra_Plus_Menu')){
 												'extra' 		=> ' multiple=multiple ',
 											), 'select');
 										?></div>
-										<div class="form-group col-md-3 ui-front"><?php 
+										<div class="form-group col-md-3 ui-front fed_show_user_profile"><?php 
 											echo fed_input_box('extended[multiple]', array(
 												'default_value' => 'Enable',
 												'label' 		=> __('Enable Multi Select', 'frontend-dashboard-extra-plus'),
@@ -622,7 +621,7 @@ if( !class_exists('Fed_Extra_Plus_Menu')){
 								<div class="modal-body">
 									<div class="row"><?php 
 										foreach( fed_font_awesome_list() as $key => $list ){
-											echo '<div class="col-xs-3 col-sm-2 col-md-1 fed_extra_plus_icon text-center" data-dismiss="modal" data-id="'.$key.'" title="'.esc_attr($key).'"><span class="'.esc_attr($key).' fa-2x" data-id="'.esc_attr($key).'" id="'.esc_attr($key).'"></span></div>';
+											echo '<div class="col-xs-3 col-sm-2 col-md-1 fed_extra_plus_icon text-center" data-dismiss="modal" data-id="'.$key.'" title="'.esc_attr($key).'"><span class="'.esc_attr($key).' fa-2x"></span></div>';
 										}
 									?></div>
 								</div>
@@ -835,10 +834,14 @@ if( !class_exists('Fed_Extra_Plus_Menu')){
 			wp_enqueue_style('fed-extra-plus-style', plugins_url('assets/css/style.css', FED_EXTRA_PLUS_PLUGIN));
 
 			wp_enqueue_script('fed-extra-plus-gmaps', 'https://maps.googleapis.com/maps/api/js'.$key, array('jquery'), FED_EXTRA_PLUS_PLUGIN_VERSION);
+
 			wp_enqueue_script('fed-extra-plus-intlTelInput', plugins_url('assets/js/intlTelInput-jquery.min.js', FED_EXTRA_PLUS_PLUGIN), array('jquery'), FED_EXTRA_PLUS_PLUGIN_VERSION);
+
 			wp_enqueue_script('fed-extra-plus-jquery-ui-selectmenu', plugins_url('assets/js/jquery-ui.min.js', FED_EXTRA_PLUS_PLUGIN), array('jquery'), FED_EXTRA_PLUS_PLUGIN_VERSION);
 
+
 			wp_enqueue_script('fed-extra-plus-script', plugins_url('assets/js/script.js', FED_EXTRA_PLUS_PLUGIN), array('jquery', 'fed-extra-plus-jquery-ui-selectmenu', 'fed-extra-plus-intlTelInput', 'fed-extra-plus-gmaps', 'fed_select2_script'), FED_EXTRA_PLUS_PLUGIN_VERSION);
+
 			wp_localize_script('fed-extra-plus-script', 'fedep', array(
 				'utils' 	=> plugins_url('assets/js/utils.js', FED_EXTRA_PLUS_PLUGIN),
 				'error' 	=> array(

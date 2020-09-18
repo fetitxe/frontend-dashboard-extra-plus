@@ -452,6 +452,7 @@ if( !function_exists('fed_form_file_advanced') ){
 		$allow_mime = ( isset($extended['allowed_files']) && !empty($extended['allowed_files']) )? $extended['allowed_files'] : $all_mime;
 		$forbiden_mime = ( isset($extended['forbidden_files']) && !empty($extended['forbidden_files']) )? $extended['forbidden_files'] : array();
 		$multiple = ( isset($extended['multiple_files']) && 'true' == $extended['multiple_files'] )? true : false;
+		$required = fed_get_data( 'is_required', $options ) == 'true' ? 'required="required"' : '';
 		$label = isset($options['label_name'])? $options['label_name'] : __('Feature');
 		$meta = $options['input_meta'].($multiple? '[]' : '');
 		$icon = isset($extended['main_icon'])? $extended['main_icon'] : 'fas fa-upload';
@@ -463,24 +464,26 @@ if( !function_exists('fed_form_file_advanced') ){
 			if( !is_array($user_value) ){
 				$user_value = array($user_value);
 			}
-			foreach( $user_value as $value ){
+			foreach( $user_value as $i => $value ){
 				if( '' !== $value){
-					$value = (int) $value;
 					$items[] = array(
-						'id' 	=> $value,
-						'img'	=> fed_extra_plus_get_image_by_type($value, array(
+						'id' 		=> (int) $value,
+						'img'		=> fed_extra_plus_get_image_by_type((int) $value, array(
 							'width' 		=> $multiple? 112 : 250,
 							'height' 		=> $multiple? 112 : 250,
 							'cut' 			=> true
 						)),
+						'required' 	=> 0==$i? $required : '',
+						
 					);
 				}
 			}
 		}
 		if( empty($user_value) || $multiple ){
 			$items[] = array(
-				'id' 	=> '',
-				'img'	=> '<span class="fed_extra_plus_upload_icon '.$icon .' fa-3x"></span>',
+				'id' 		=> '',
+				'img'		=> '<span class="fed_extra_plus_upload_icon '.$icon .' fa-3x"></span>',
+				'required' 	=> empty($user_value)? $required : '',
 			);
 		}
 
@@ -509,7 +512,7 @@ if( !function_exists('fed_extra_plus_attached_item') ){
 			<button type="button" class="close fed_extra_plus_remove_image" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 			<div class="fed_extra_plus_upload_container">
 				<div class="fed_extra_plus_upload_image_container">'.$img.'</div>
-				<input type="hidden" name="'.$meta.'" class="fed_extra_plus_upload_input" value="'.$value.'" />
+				<input type="hidden" name="'.$meta.'" class="fed_extra_plus_upload_input" value="'.$value.'" '.$item['required'].' />
 			</div>
 		</div>';
 	}
